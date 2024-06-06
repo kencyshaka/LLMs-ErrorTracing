@@ -1,0 +1,55 @@
+
+#prompts configurations
+overview:
+  language: Java
+  assignment: 439 
+  season: Fall #[Fall, "Spring"]
+  prediction: code  #[code, error]
+  num_weeks: 2
+  prediction_instruction: false
+  content_options:
+    code: true
+    errors: true
+    scores: true
+    raw_errors: true
+  
+history:
+  questions:
+    id: true
+    text: true
+    concept: false
+    method_head: true
+  attempts:
+    max: true
+    steps: 50
+
+instructions:
+  options:
+    one: true
+    two: true  # Include only if content_options.code is true
+    three: true  # Include only if content_options.errors is true
+    four: true
+
+output:
+  next_task:
+    id: true.  # always true
+    text: true
+    concept: true
+    method_head: true
+    considerations:
+      one: true
+      two: false
+
+#model configurations
+model:
+  name: meta-llama/CodeLlama-13b-Instruct-hf
+  access_token: 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
+  train: false
+  fine-tuned_model: false
+  save_path: model/
+
+#trainging
+seed: 1
+max_output_tokens: 1000
+
+
