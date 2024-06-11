@@ -1,5 +1,5 @@
 .DS_Store
-.idea
+.idea/
 .ipynb_checkpoints
 
 #large files
@@ -7,7 +7,7 @@ wandb/
 *.out
 *.zip
 *.gz
-src/*.sh
+#src/*.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
