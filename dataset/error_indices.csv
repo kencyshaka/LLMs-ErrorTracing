@@ -1,11 +1,11 @@
-key,value,description,frequency
-0,0,No error,4047
-1,1,"ID expected e.g like ;)(""",2128
-5,2,Missing return statement,1291
-2,3,Illegal start of expression,1163
-3,4,not a statement,850
-8,5,'else' without 'if',629
-4,6,Cannot find symbol: variable,624
-12,7,"Bad operand types for binary operator 'ID', like '&&, ||,*,+,>=,<'",554
-6,8,Incompatible types like datatypes mismatch,444
-11,9,"Reached end of file while parsing, maybe a missing delimiter or closing brace",426
+key,value,description,message,frequency
+0,0,No error,No errors,4047
+1,1,"ID expected e.g like ;)(""",'ID' expected,2128
+5,2,Missing return statement,missing return statement,1291
+2,3,Illegal start of expression,illegal start of expression,1163
+3,4,not a statement,not a statement,850
+8,5,'else' without 'if','else' without 'if',629
+4,6,Cannot find symbol: variable,cannot find symbol: variable ID,624
+12,7,"Bad operand types for binary operator 'ID', like '&&, ||,*,+,>=,<'",bad operand types for binary operator 'ID',554
+6,8,Incompatible types like datatypes mismatch,incompatible types,444
+11,9,"Reached end of file while parsing, maybe a missing delimiter or closing brace","reached end of file while parsing, maybe a missing delimiter or closing brace?",426

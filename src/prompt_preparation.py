@@ -103,6 +103,7 @@ def generate_input(submissions, question_numbers, scores, errors, dataframes, co
     # considerations = " ".join(config['output']['next_task']['considerations'].values())
     text += f"\nOutput:\nBased on this history, predict the {'code' if config['overview']['prediction'] == 'code' else 'errors if any'} that the student will {'write' if config['overview']['prediction'] == 'code' else 'encounter'} for \n{next_task} \n{considerations}\n"
 
+    text += f"{'###Code:\n ###Explanation: ' if config['overview']['prediction'] == 'code' else '###Errors: \n ###Explanation'}"
     return text
 
 
@@ -165,25 +166,25 @@ if __name__ == '__main__':
             else:
                 steps = lent
 
-            # if count == 20:
-            for j in range(0, steps - 1):
-                # Include all previous submissions up to the current one
-                current_submissions = css[:j + 2]
-                current_question_numbers = ques[:j + 2]
-                current_scores = ans[:j + 2]
-                current_errors = err[:j + 2]
-                current_error_message = get_compiler_message(main_df, current_submissions[-1])
+            if count == 20:
+                for j in range(0, steps - 1):
+                    # Include all previous submissions up to the current one
+                    current_submissions = css[:j + 2]
+                    current_question_numbers = ques[:j + 2]
+                    current_scores = ans[:j + 2]
+                    current_errors = err[:j + 2]
+                    current_error_message = get_compiler_message(main_df, current_submissions[-1])
 
-                input_text = generate_input(current_submissions, current_question_numbers,
+                    input_text = generate_input(current_submissions, current_question_numbers,
                                             current_scores, current_errors, dataframes, config)
-                # print(input_text)
-                rows.append({"problem_id": current_question_numbers[-1],
+                    print(input_text)
+                    rows.append({"problem_id": current_question_numbers[-1],
                              "input_text": input_text,
                              "target_errors": get_committed_errors(error_df, current_errors[-1]),
                              "raw_target_errors": current_error_message,
                              "target_code": code_df.loc[code_df['CodeStateID'] == current_submissions[-1], 'Code'].values[0]})
 
-                # break
+                    break
             count += 1
 
     # Create a DataFrame and save to CSV

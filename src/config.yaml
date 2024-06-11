@@ -11,13 +11,13 @@ overview:
     code: true
     errors: true
     scores: true
-    raw_errors: true
+    raw_errors: false
   
 history:
   questions:
     id: true
     text: true
-    concept: false
+    concept: true
     method_head: true
   attempts:
     max: true
