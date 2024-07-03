@@ -5,5 +5,5 @@
 
 #conda activate /home/mshaka/anaconda3/envs/llm
 
-python prompt_preparation.py
+#python prompt_preparation.py
 python main.py

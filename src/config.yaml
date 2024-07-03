@@ -51,5 +51,6 @@ model:
 #trainging
 seed: 1
 max_output_tokens: 1000
-
+questions: 10
+top_error_size: 10
 

@@ -39,8 +39,7 @@ def load_model_and_tokenizer(configs,quantization_config):
     print(f"Downloading model {model_name} ...")
     model = AutoModelForCausalLM.from_pretrained(model_name, token=access_token, quantization_config=quantization_config)
     tokenizer = AutoTokenizer.from_pretrained(model_name, token=access_token)
-    # model.cuda()
-    # model = []
+    
     return model, tokenizer
 
 
@@ -55,9 +54,7 @@ def load_config(path):
 
 
 def tokenize_function(example,tokenizer):
-    # start_prompt = 'Summarize the following conversation.\n\n'
-    # end_prompt = '\n\nSummary: '
-    # prompt = [start_prompt + dialogue + end_prompt for dialogue in example["dialogue"]]
+    # TODO: prepare the prompts based on the LLM, currently using codeLlama format
 
     prompt = f"<s>[INST] {example['input_text'].strip()} [/INST]"
     input_tokens = tokenizer(prompt, return_tensors="pt").input_ids

@@ -7,10 +7,12 @@ from util import *
 from datetime import datetime
 from data_loader import *
 from model import *
+from evaluation import performance_granular
+
 
 wandb.login()
 
-def main(configs, output_path, model_path, error_df):
+def main(configs, output_path, model_path, result_path, error_df):
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
     set_random_seed(configs.seed)
 
@@ -48,7 +50,7 @@ def main(configs, output_path, model_path, error_df):
             model, tokenizer = load_model_and_tokenizer(configs, quantization_config)
 
             # load the input_text for test set
-            input_text = test_set[:]
+            input_text = test_set[:5]
             print("input_text", input_text.shape)
             tokenized_datasets = input_text.apply(lambda row: tokenize_function(row, tokenizer), axis =1)
             print("tokenized_datasets", tokenized_datasets.shape)
@@ -66,7 +68,10 @@ def main(configs, output_path, model_path, error_df):
 
             
             tokenized_datasets[["generated_code", "explanation","error_list", "error_count", "error_class"]] = tokenized_datasets["prompt"].apply(lambda x: pd.Series(generate_text(x, pipe, configs, error_df)))
-            tokenized_datasets = tokenized_datasets.drop(columns=['prompt','input_ids', 'labels', ])
+            output_df = tokenized_datasets.drop(columns=['prompt','input_ids', 'labels', ])
+            performance_granular(output_df, error_df, result_path, configs) # performing first attempt and overall evaluatioin
+
+
             print("The new test shape====", tokenized_datasets.shape)
             print("The new test shape:", tokenized_datasets.head())
 
@@ -74,7 +79,7 @@ def main(configs, output_path, model_path, error_df):
             filename = os.path.join(output_path, test_file)
             print("file save at ---------------------------------", filename)
             # Save the updated DataFrame to a CSV file
-            tokenized_datasets.to_csv(filename, index=False)
+            output_df.to_csv(filename, index=False)
             
 
     else:
@@ -89,14 +94,20 @@ if __name__ == '__main__':
     # Load configuration, code, error and question details
     config = load_config(config_path)
     error_df = pd.read_csv(error_path) 
+
     # define the folders
     output_path = os.path.join("../dataset/output/", config['overview']['prediction'])
     model_path = os.path.join("../model/", config['overview']['prediction'])
+    result_path = os.path.join("../result/", config['overview']['prediction'])
+
 
     if output_path:
         os.makedirs(output_path, exist_ok=True)
 
     if model_path:
         os.makedirs(model_path, exist_ok=True)
+    
+    if result_path:
+        os.makedirs(result_path, exist_ok=True)
 
-    main(config, output_path, model_path, error_df)
+    main(config, output_path, model_path, result_path, error_df)

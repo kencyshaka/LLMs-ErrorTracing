@@ -30,7 +30,7 @@ def generate_input(submissions, question_numbers, scores, errors, dataframes, co
     text += f"Below are the detailed records of their submissions:\n"
 
     current_question = question_numbers[0]
-    text += f"Question "
+    text += f"### Question "
     if config['history']['questions']['id']:
         text += f"{int(current_question) + 1} \n"
     if config['history']['questions']['text']:
@@ -45,7 +45,7 @@ def generate_input(submissions, question_numbers, scores, errors, dataframes, co
         next_question = question_numbers[i + 1]
         if question_numbers[i] != current_question:
             current_question = question_numbers[i]
-            text += f"Question "
+            text += f"### Question "
             if config['history']['questions']['id']:
                 text += f"{int(current_question) + 1} \n"
             if config['history']['questions']['text']:
@@ -68,7 +68,7 @@ def generate_input(submissions, question_numbers, scores, errors, dataframes, co
         attempt_number += 1
 
     if config['overview']['prediction_instruction']:
-        text += " Instructions for Prediction:\n"
+        text += "### Instructions for Prediction:\n"
         if config['instructions']['options']['one']:
             text += f"Progression and Learning: Consider the student's progression in terms of scores, complexity of the code over time.\n"
         if config['instructions']['options']['two'] and config['overview']['content_options']['code']:
@@ -100,22 +100,25 @@ def generate_input(submissions, question_numbers, scores, errors, dataframes, co
     if config['output']['next_task']['considerations']['two']:
         considerations += "Provide a brief explanation of the key factors considered."
 
-    # considerations = " ".join(config['output']['next_task']['considerations'].values())
-    text += f"\nOutput:\nBased on this history, predict the {'code' if config['overview']['prediction'] == 'code' else 'errors if any'} that the student will {'write' if config['overview']['prediction'] == 'code' else 'encounter'} for \n{next_task} \n{considerations}\n"
+    text += f"\n### Output:\nBased on this history, predict the {'code' if config['overview']['prediction'] == 'code' else 'errors if any'} that the student will {'write' if config['overview']['prediction'] == 'code' else 'encounter'} for \n{next_task} \n{considerations}\n"
+    if config['overview']['prediction'] == 'code':
+        text += "### Code: #write the predicted code here\n### Explanation: # write the explanation here"
+    else:
+        text += "### Errors:\n### Explanation: "
 
-    text += f"{'###Code:\n ###Explanation: ' if config['overview']['prediction'] == 'code' else '###Errors: \n ###Explanation'}"
     return text
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    test_path = 'dataset/test_set.csv'
-    config_path = 'src/config.yaml'
-    error_path = 'dataset/error_indices.csv'
-    code_path = 'dataset/CodeStates.csv'
-    question_path = 'dataset/prompt_concept.csv'
-    main_path = 'dataset/MainTable.csv'
-    save_prompts = 'dataset/prompt/'
+    test_path = '../dataset/test_set.csv'
+    config_path = 'config.yaml'
+    error_path = '../dataset/error_indices.csv'
+    code_path = '../dataset/CodeStates.csv'
+    question_path = '../dataset/prompt_concept.csv'
+    main_path = '../dataset/MainTable.csv'
+    subject_path = '../dataset/Subject.csv'
+    save_prompts = '../dataset/prompt/'
 
     # Load configuration, code, error and question details
     config = load_config(config_path)
@@ -128,7 +131,7 @@ if __name__ == '__main__':
 
     error_df = pd.read_csv(error_path)
     code_df = pd.read_csv(code_path)
-
+    grade_df = pd.read_csv(subject_path)
     main_df = pd.read_csv(main_path)
     print("mainTable", main_df.shape)
 
@@ -165,8 +168,18 @@ if __name__ == '__main__':
 
             else:
                 steps = lent
+            
+            #the the student ID and their final grade
+            user_id = main_df.loc[main_df['CodeStateID'] == css[0], 'SubjectID'].values[0]
+            if not grade_df.loc[grade_df['SubjectID'] == user_id, 'X-Grade'].empty:
+                grade = grade_df.loc[grade_df['SubjectID'] == user_id, 'X-Grade'].values[0]
+            else:
+                grade = "not found"
 
-            if count == 20:
+            print("user_id",user_id)
+            print("grade",grade)
+
+            if count < 10: # to select a portion of the testset
                 for j in range(0, steps - 1):
                     # Include all previous submissions up to the current one
                     current_submissions = css[:j + 2]
@@ -177,14 +190,16 @@ if __name__ == '__main__':
 
                     input_text = generate_input(current_submissions, current_question_numbers,
                                             current_scores, current_errors, dataframes, config)
-                    print(input_text)
-                    rows.append({"problem_id": current_question_numbers[-1],
+                    
+                    rows.append({"user_id": user_id,
+                                 "grade": grade,
+                             "problem_id": current_question_numbers[-1],
                              "input_text": input_text,
-                             "target_errors": get_committed_errors(error_df, current_errors[-1]),
+                             "target_errors": current_errors[-1],
                              "raw_target_errors": current_error_message,
                              "target_code": code_df.loc[code_df['CodeStateID'] == current_submissions[-1], 'Code'].values[0]})
 
-                    break
+                    
             count += 1
 
     # Create a DataFrame and save to CSV
@@ -200,8 +215,8 @@ if __name__ == '__main__':
         attempts = max_step
     else:
         attempts = "all"
-    output_csv_file_path = f"prompts_{attempts}-attempts_score-{isScore}_error-{isError}_raw-{isRaw}_code-{isCode}_concept-{isConcept}_instruction-{isInstruction}.csv"
+    output_csv_file_path = f"t_prompts_{attempts}-attempts_score-{isScore}_error-{isError}_raw-{isRaw}_code-{isCode}_concept-{isConcept}_instruction-{isInstruction}.csv"
     save_file = os.path.join(directory_path, output_csv_file_path)
-    # df.to_csv(save_file, index=False)
+    df.to_csv(save_file, index=False)
 
     print(f"CSV file saved as: {save_file}")

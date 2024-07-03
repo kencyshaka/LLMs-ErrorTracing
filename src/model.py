@@ -14,7 +14,8 @@ def generate_text(prompt, pipe, configs, df_error):
     # TODO need to put into its own function to format and process output
     code, explanation = extract_code(result[0]['generated_text'])
     
-    """
+    # code below is for testing purpose
+    """ 
 public int greenTicket(int a, int b, int c)
 {
     int result;
