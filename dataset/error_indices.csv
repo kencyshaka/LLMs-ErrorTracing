@@ -9,3 +9,4 @@ key,value,description,message,frequency
 12,7,"Bad operand types for binary operator 'ID', like '&&, ||,*,+,>=,<'",bad operand types for binary operator 'ID',554
 6,8,Incompatible types like datatypes mismatch,incompatible types,444
 11,9,"Reached end of file while parsing, maybe a missing delimiter or closing brace","reached end of file while parsing, maybe a missing delimiter or closing brace?",426
+0,-1,There is error but not a common one,Not common error,0

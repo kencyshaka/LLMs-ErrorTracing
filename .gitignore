@@ -4,6 +4,8 @@
 
 #large files
 wandb/
+dataset/output/
+dataset/prompt/
 *.out
 *.zip
 *.gz
