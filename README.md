@@ -1,4 +1,4 @@
-# LLMs-ErrorTracing
+# Personalised Code and Error predictions in Programming Education via Large Language Models
 
 This repository contains code for in-context learning and fine-tuning Large Language Models (LLMs) to generate code 
 based on students’ mastery of programming concepts. We utilize a real student dataset from the [CSEDM Data Challenge](https://sites.google.com/ncsu.edu/csedm-dc-2021/dataset)
